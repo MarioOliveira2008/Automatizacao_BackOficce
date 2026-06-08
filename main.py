@@ -1,5 +1,9 @@
-def main():
-    print("Sistema de Automação de Backoffice iniciado.")
+from fastapi import FastAPI
 
-if __name__ == "__main__":
-    main()
+app = FastAPI()
+
+@app.get("/")
+def home():
+    return {
+        "mensagem": "Servidor de Automação de Backoffice funcionando!"
+    }
