@@ -1,9 +1,12 @@
 
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
+from dotenv import load_dotenv
 from app.route.upload import upload
 import app.database # Importa apenas para garantir que a base de dados inicializa
 
+
+load_dotenv()
 app = FastAPI()
 
 # Rotas de Backend

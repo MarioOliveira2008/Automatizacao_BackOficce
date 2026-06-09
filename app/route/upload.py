@@ -3,16 +3,18 @@ import pymupdf  # A sua Ferrari
 import requests
 import os 
 
+
 upload = APIRouter(
     prefix="/uploads",
     tags=["Uploads"]
 )
 
-# 🚨 Cole a sua chave real da Groq (que começa com gsk_) aqui:
-GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 
 @upload.post("/")
 async def processar_pdf(arquivo: UploadFile = File(...)):
+
+    GROQ_API_KEY = os.getenv("API_KEY")
+
     if arquivo.content_type != "application/pdf":
         raise HTTPException(status_code=400, detail="Apenas arquivos PDF são permitidos.")
 
