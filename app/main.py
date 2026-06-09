@@ -1,10 +1,17 @@
-from fastapi import FastAPI
-from app.route.upload import upload
 
+from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
+from dotenv import load_dotenv
+from app.route.upload import upload
+import app.database # Importa apenas para garantir que a base de dados inicializa
+
+
+load_dotenv()
 app = FastAPI()
 
+# Rotas de Backend
 app.include_router(upload)
 
-@app.get("/")
-def home():
-    return {"mensagem": "API funcionando"}
+# Serve a pasta "static" como a interface visual principal
+# Coloque isto SEMPRE por baixo das rotas (include_router)
+app.mount("/", StaticFiles(directory="static", html=True), name="static")
