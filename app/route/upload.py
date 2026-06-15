@@ -1,8 +1,12 @@
-from fastapi import APIRouter, UploadFile, File, HTTPException
-import pymupdf  # A sua Ferrari
-import requests
-import os 
+from fastapi import APIRouter, UploadFile, File, HTTPException, Depends
+from sqlalchemy.orm import Session
 
+import pymupdf
+import requests
+import os
+
+from app.database import get_db
+from app.model.documento import Documento
 
 upload = APIRouter(
     prefix="/uploads",
@@ -11,61 +15,102 @@ upload = APIRouter(
 
 
 @upload.post("/")
-async def processar_pdf(arquivo: UploadFile = File(...)):
+async def processar_pdf(
+    arquivo: UploadFile = File(...),
+    db: Session = Depends(get_db)
+):
 
     GROQ_API_KEY = os.getenv("API_KEY")
 
     if arquivo.content_type != "application/pdf":
-        raise HTTPException(status_code=400, detail="Apenas arquivos PDF são permitidos.")
+        raise HTTPException(
+            status_code=400,
+            detail="Apenas arquivos PDF são permitidos."
+        )
 
     try:
-        # 1. Leitura do PDF
+        # Leitura do PDF
         conteudo_bytes = await arquivo.read()
-        documento = pymupdf.open(stream=conteudo_bytes, filetype="pdf")
-        
-        total_paginas = len(documento)
-        
+
+        documento_pdf = pymupdf.open(
+            stream=conteudo_bytes,
+            filetype="pdf"
+        )
+
+        total_paginas = len(documento_pdf)
+
         texto_completo = ""
-        for pagina in documento:
+
+        for pagina in documento_pdf:
             texto_completo += str(pagina.get_text("text"))
-            
-        documento.close()
 
-        # 2. Prepara o Prompt para a IA
-        prompt = f"Resuma o seguinte texto em uma frase curta:\n\n{texto_completo}"
+        documento_pdf.close()
 
-        # 3. Comunicação com a Groq (Llama 3 na Nuvem)
+        # Prompt para IA
+        prompt = f"""
+        Resuma o seguinte texto em uma frase curta:
+
+        {texto_completo}
+        """
+
+        # Requisição para Groq
         url = "https://api.groq.com/openai/v1/chat/completions"
+
         headers = {
             "Authorization": f"Bearer {GROQ_API_KEY}",
             "Content-Type": "application/json"
         }
+
         payload = {
-            "model": "llama-3.1-8b-instant", # O modelo oficial e rápido do Llama 3
+            "model": "llama-3.1-8b-instant",
             "messages": [
-                {"role": "user", "content": prompt}
+                {
+                    "role": "user",
+                    "content": prompt
+                }
             ],
-            "temperature": 0.3 # Deixa a IA mais focada e menos criativa
+            "temperature": 0.3
         }
 
-        # Dispara o pacote para a IA
-        resposta = requests.post(url, headers=headers, json=payload)
-        
-        # 4. Tratamento da Resposta da Groq
-        if resposta.status_code == 200:
-            dados_ia = resposta.json()
-            # A Groq devolve a resposta aninhada nesta estrutura:
-            texto_ia = dados_ia["choices"][0]["message"]["content"]
-        else:
-            texto_ia = f"Erro na API da IA: {resposta.text}"
+        resposta = requests.post(
+            url,
+            headers=headers,
+            json=payload
+        )
 
-        # 5. Retorna para o HTML
+        if resposta.status_code != 200:
+            raise HTTPException(
+                status_code=500,
+                detail=f"Erro na API da IA: {resposta.text}"
+            )
+
+        dados_ia = resposta.json()
+
+        texto_ia = dados_ia["choices"][0]["message"]["content"]
+
+        # Salvar no banco
+        novo_documento = Documento(
+            nome_arquivo=str(arquivo.filename),
+            total_paginas=total_paginas,
+            texto_extraido=texto_completo,
+            resposta_ia=texto_ia
+        )
+
+        db.add(novo_documento)
+        db.commit()
+        db.refresh(novo_documento)
+
+        # Retorno
         return {
             "mensagem": "Arquivo processado com sucesso!",
+            "id": novo_documento.id,
             "arquivo": arquivo.filename,
             "total_paginas": total_paginas,
             "resposta_ia": texto_ia
         }
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Erro interno: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Erro interno: {str(e)}"
+        )
