@@ -22,6 +22,14 @@
             <p style="margin-bottom: 10px;"><strong>Páginas lidas:</strong> <span id="paginas"></span></p>
             <p><strong>Resumo da IA:</strong> <span id="resumo"></span></p>
         </div>
+
+        <div style="margin-top: 30px; background: #171923; padding: 20px; border-radius: 15px; border: 1px solid #252836;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h2>Histórico de Análises</h2>
+                <button onclick="limparHistorico()" style="background: #ef4444; padding: 10px 15px; border: none; border-radius: 10px; color: white; cursor: pointer;">Limpar Banco</button>
+            </div>
+            <div id="historico"></div>
+        </div>
     </div>
 
     <script src="script.js"></script>
