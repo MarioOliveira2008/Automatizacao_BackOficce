@@ -9,29 +9,21 @@
 <body>
     <div class="container">
         <h1>Bem-vindo ao HEMADA</h1>
-        <p>Aqui você organiza documentos de forma simples e eficiente.</p>
+        <p class="subtitle">Aqui você organiza documentos de forma simples e eficiente.</p>
 
-        <form id="enviarArquivo">
+        <form id="enviarArquivo" class="upload-form">
             <input type="file" id="arquivo" accept="application/pdf" required>
             <button type="submit">Enviar e Analisar</button> 
         </form>
 
         <p id="mensagem"></p>
         
-        <div id="resultado" style="display: none; background: #eee; padding: 10px; margin-top: 15px;">
-            <p><strong>Páginas lidas:</strong> <span id="paginas"></span></p>
+        <div id="resultado" style="display: none; background: #1f2330; padding: 20px; margin-top: 15px; border-radius: 15px; border: 1px solid #2d3448;">
+            <p style="margin-bottom: 10px;"><strong>Páginas lidas:</strong> <span id="paginas"></span></p>
             <p><strong>Resumo da IA:</strong> <span id="resumo"></span></p>
         </div>
     </div>
 
     <script src="script.js"></script>
-
-    <button onclick="limparHistorico()">LIMPAR HISTÓRICO
-        
-    </button>
-    <ul id="painel-historico">
-    <li>HISTÓRICO VAZIO</li>
-
-    <div id="historico"></div>
 </body>
 </html>
