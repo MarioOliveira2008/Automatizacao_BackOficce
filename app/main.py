@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 from app.route.historico import historico
 from app.route.upload import upload
 from app.database import Base, engine
+from app.route.chat import chat_router
 
 load_dotenv()
 
@@ -22,5 +23,5 @@ app = FastAPI()
 # Inclui as duas rotas no sistema
 app.include_router(upload)
 app.include_router(historico)
-
+app.include_router(chat_router)
 app.mount("/", StaticFiles(directory="static", html=True), name="static")

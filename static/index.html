@@ -3,35 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HEMADA</title>
-    <link rel="stylesheet" href="style.css">
+    <title>HEMADA - Leitor de PDF com IA</title>
+    
+    <link rel="stylesheet" href="/style.css">
 </head>
 <body>
-    <div class="container">
-        <h1>Bem-vindo ao HEMADA</h1>
-        <p class="subtitle">Aqui você organiza documentos de forma simples e eficiente.</p>
 
-        <form id="enviarArquivo" class="upload-form">
-            <input type="file" id="arquivo" accept="application/pdf" required>
-            <button type="submit">Enviar e Analisar</button> 
+    <div class="container">
+        <h1>HEMADA IA</h1>
+        <p>Envie seu documento e dê um comando para a inteligência artificial.</p>
+
+        <form id="enviarArquivo" class="formulario-upload">
+            <input type="file" id="arquivo" class="input-arquivo" accept="application/pdf" required>
+            
+            <textarea id="perguntaUpload" class="input-prompt" placeholder="Digite seu prompt (Ex: Resuma em tópicos, traduza para espanhol, crie uma tabela de gastos...)" required rows="3"></textarea>
+            
+            <button type="submit" class="btn-enviar">Enviar Arquivo e Executar Prompt</button>
         </form>
 
         <p id="mensagem"></p>
-        
-        <div id="resultado" style="display: none; background: #1f2330; padding: 20px; margin-top: 15px; border-radius: 15px; border: 1px solid #2d3448;">
-            <p style="margin-bottom: 10px;"><strong>Páginas lidas:</strong> <span id="paginas"></span></p>
-            <p><strong>Resumo da IA:</strong> <span id="resumo"></span></p>
-        </div>
 
-        <div style="margin-top: 30px; background: #171923; padding: 20px; border-radius: 15px; border: 1px solid #252836;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                <h2>Histórico de Análises</h2>
-                <button onclick="limparHistorico()" style="background: #ef4444; padding: 10px 15px; border: none; border-radius: 10px; color: white; cursor: pointer;">Limpar Banco</button>
+        <div id="resultado" style="display: none; margin-top: 20px;">
+            <h3>Resultado Atual:</h3>
+            <p><strong>Páginas lidas:</strong> <span id="paginas"></span></p>
+            <div class="card-historico">
+                <p><span id="resumo"></span></p>
             </div>
-            <div id="historico"></div>
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <div class="container" style="margin-top: 20px;">
+        <h2>Histórico de Consultas</h2>
+        <button onclick="limparHistorico()" style="background:#ef4444; color:white; border:none; padding:8px 12px; border-radius:5px; cursor:pointer;">Limpar Banco de Dados</button>
+        
+        <div id="historico" style="margin-top: 15px;">
+            </div>
+    </div>
+
+    <script src="/script.js"></script>
 </body>
 </html>
