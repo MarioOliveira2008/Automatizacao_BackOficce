@@ -17,3 +17,5 @@ __pycache__/
 *.log
 
 banco.db
+# Ambiente virtual do projeto
+.venv/
